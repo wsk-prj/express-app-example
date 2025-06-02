@@ -1,17 +1,17 @@
+import cors from "cors";
 import express from "express";
-
+import helmet from "helmet";
+import { env } from "./config/env";
+import { router } from "./routes/index";
 const app = express();
 
-// configuration
-const SERVER_PORT = 4000;
-app.listen(SERVER_PORT, () => {
-  console.log(`Server is running on port ${SERVER_PORT}`);
-});
+app.use(cors());
+app.use(helmet());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(env.ROUTER_PREFIX, router);
 
-// routers
-const router = express.Router();
-app.use('/api', router)
-
-router.get("/", (_req, res) => {
-  res.send("Hello World");
+// Express Configurations
+app.listen(env.PORT, () => {
+  console.log(`Server is running on port ${env.PORT}`);
 });
