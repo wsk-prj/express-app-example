@@ -3,9 +3,9 @@ import { authRouter } from './auth';
 
 export const router = Router();
 
-router.get('/', (_req, res) => {
-  res.send('Hello World');
+router.get("/", (_req, res) => {
+  res.send("Hello World");
 });
 
 // Add routers here
-router.use('/auth', authRouter);
+router.use("/auth", authRouter);
