@@ -21,7 +21,7 @@ app.use(session({
   cookie: {
     secure: false,
     httpOnly: true,
-    maxAge: 2 * 60 * 60 * 1000  // 2M
+    maxAge: 2 * 60 * 1000  // 2M
   }
 }));
 app.use(express.json());
