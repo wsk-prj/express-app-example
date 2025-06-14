@@ -1,78 +1,74 @@
+import { env } from "@/config/env";
+import { LoginDto, RegisterDto } from "@/dto/auth.dto";
+import { InternalServerError, UnauthorizedError } from "@/api/http-error";
+import { db } from "@/libs/db";
+import { validateRequest } from "@/middlewares/validator";
 import bcrypt from "bcrypt";
 import { Router } from "express";
-import { db } from "@/libs/db";
-import { requireAuth } from "@/middleware/auth";
+import asyncHandler from "express-async-handler";
 
-declare module 'express-session' {
+declare module "express-session" {
   interface Session {
-    userId: number;
+    userId?: number;
   }
 }
 
 export const authRouter = Router();
 
-authRouter.post("/register", async (req, res) => {
-  const { nickname, email, password } = req.body;
-  if (!nickname || !email || !password) return res.status(400).json({ message: "Invalid request" });
+authRouter.post(
+  "/register",
+  validateRequest(RegisterDto),
+  asyncHandler(async (req, res, next) => {
+    const { nickname, email, password } = req.body;
 
-  const user = await db.user.create({
-    data: {
-      nickname,
-      email,
-      password: await bcrypt.hash(password, 10),
-    },
-  });
+    const user = await db.user.create({
+      data: {
+        nickname,
+        email,
+        password: await bcrypt.hash(password, 10),
+      },
+    });
 
-  res.json({ message: "Register successful", user });
-});
+    res.success({
+      user: {
+        id: user.id,
+        nickname: user.nickname,
+        email: user.email,
+      },
+    });
+  })
+);
 
-authRouter.post("/login", async (req, res) => {
-  const { email, password } = req.body;
-  if (!email || !password) return res.status(400).json({ message: "Invalid request" });
+authRouter.post(
+  "/login",
+  validateRequest(LoginDto),
+  asyncHandler(async (req, res, next) => {
+    const { email, password } = req.body;
 
-  const user = await db.user.findUnique({
-    where: { email },
-  });
-  if (!user) return res.status(401).json({ message: "Unauthorized" });
+    const user = await db.user.findUnique({
+      where: { email },
+    });
+    if (!user) throw new UnauthorizedError();
 
-  const isPasswordValid = await bcrypt.compare(password, user.password);
-  if (!isPasswordValid) return res.status(401).json({ message: "Unauthorized" });
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) throw new UnauthorizedError();
 
-  req.session.userId = user.id;
+    req.session.userId = user.id;
+    res.success({
+      user: {
+        id: user.id,
+        nickname: user.nickname,
+        email: user.email,
+      },
+    });
+  })
+);
 
-  res.json({ 
-    message: "Login successful", 
-    user: { 
-      id: user.id, 
-      nickname: user.nickname,
-      email: user.email 
-    } 
-  });
-});
-
-authRouter.post("/logout", (req, res) => {
+authRouter.post("/logout", (req, res, next) => {
   req.session.destroy((err) => {
-    if (err) {
-      return res.status(500).json({ message: "Could not log out" });
-    }
-    res.clearCookie('connect.sid'); // Default session cookie name
-    res.json({ message: "Logout successful" });
-  });
-});
+    if (err) throw new InternalServerError("error while logging out");
 
-authRouter.get("/me", requireAuth, async (req, res) => {
-  const user = await db.user.findUnique({
-    where: { id: req.session.userId },
-    select: {
-      id: true,
-      nickname: true,
-      email: true
-    }
+    res.clearCookie(env.SESSION_COOKIE_NAME, env.SESSION_COOKIE_OPTIONS);
+    res.success();
   });
-  
-  if (!user) {
-    return res.status(404).json({ message: "User not found" });
-  }
-
-  res.json({ user });
 });

@@ -3,13 +3,13 @@
   "bracketSpacing": true,
   "singleAttributePerLine": false,
   "bracketSameLine": false,
-  "jsxBracketSameLine": false,
   "singleQuote": false,
-  "jsxSingleQuote": false,
   "trailingComma": "es5",
   "semi": true,
   "useTabs": false,
   "tabWidth": 2,
-  "printWidth": 140,
-  "endOfLine": "lf"
+  "printWidth": 140,  
+  "endOfLine": "auto",
+  "quoteProps": "as-needed",
+  "proseWrap": "preserve"
 }
