@@ -1,6 +1,7 @@
+import { UnauthorizedError } from "@/api/http-error";
+import { InternalServerError } from "@/api/internal.error";
 import { env } from "@/config/env";
 import { LoginDto, RegisterDto } from "@/dto/auth.dto";
-import { InternalServerError, UnauthorizedError } from "@/api/http-error";
 import { db } from "@/libs/db";
 import { validateRequest } from "@/middlewares/validator";
 import bcrypt from "bcrypt";

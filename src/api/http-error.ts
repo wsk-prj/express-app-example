@@ -1,62 +1,65 @@
 /**
  * @description HTTP Error class
- * @param status - HTTP 상태 코드
- * @param instance - 에러가 발생한 API 경로
  * @param message - 에러 메시지
  * @param details - 에러 상세 정보
+ * @param status - HTTP 상태 코드
+ * @param instance - 에러가 발생한 API 인스턴스
  */
 export class HttpError extends Error {
-  public status: number;
-  public instance?: string;
+  public status?: number;
   public details?: any;
+  public instance?: string;
 
-  constructor(status: number, message?: string, instance?: string, details?: any) {
-    super(message);
+  constructor(message: string = "HTTP Error", details?: any, status?: number, instance?: string) {
+    super();
     this.status = status;
-    this.instance = instance;
+    this.message = message;
     this.details = details;
-    this.name = "HttpError";
+    this.instance = instance;
   }
 }
 
 export class BadRequestError extends HttpError {
-  constructor(message?: string, instance?: string, details?: any) {
-    super(400, message ?? "Bad Request", instance, details);
-    this.name = "BadRequestError";
+  constructor(message: string = "Bad Request", details?: any) {
+    super();
+    this.status = 400;
+    this.message = message;
+    this.details = details;
   }
 }
 
 export class UnauthorizedError extends HttpError {
-  constructor(message?: string, instance?: string, details?: any) {
-    super(401, message ?? "Unauthorized", instance, details);
-    this.name = "UnauthorizedError";
+  constructor(message: string = "Unauthorized", details?: any) {
+    super();
+    this.status = 401;
+    this.message = message;
+    this.details = details;
   }
 }
 
 export class ForbiddenError extends HttpError {
-  constructor(message?: string, instance?: string, details?: any) {
-    super(403, message ?? "Forbidden", instance, details);
-    this.name = "ForbiddenError";
+  constructor(message: string = "Forbidden", details?: any) {
+    super();
+    this.status = 403;
+    this.message = message;
+    this.details = details;
   }
 }
 
 export class NotFoundError extends HttpError {
-  constructor(message?: string, instance?: string, details?: any) {
-    super(404, message ?? "Not Found", instance, details);
-    this.name = "NotFoundError";
+  constructor(message: string = "Not Found", details?: any) {
+    super();
+    this.status = 404;
+    this.message = message;
+    this.details = details;
   }
 }
 
 export class ConflictError extends HttpError {
-  constructor(message?: string, instance?: string, details?: any) {
-    super(409, message ?? "Conflict", instance, details);
-    this.name = "ConflictError";
-  }
-}
-
-export class InternalServerError extends HttpError {
-  constructor(message?: string, instance?: string, details?: any) {
-    super(500, message ?? "Internal Server Error", instance, details);
-    this.name = "InternalServerError";
+  constructor(message: string = "Conflict", details?: any) {
+    super();
+    this.status = 409;
+    this.message = message;
+    this.details = details;
   }
 }
