@@ -1,6 +1,9 @@
+.cursor/
+
 .claude
 CLAUDE.md
-.cursor/
+
+tsconfig.tsbuildinfo
 
 # compiled output
 /dist

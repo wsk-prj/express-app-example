@@ -1,7 +1,7 @@
 import { plainToInstance } from "class-transformer";
 import { validate } from "class-validator";
 import { NextFunction, Request, Response } from "express";
-import { BadRequestError } from "../api/http-error";
+import { BadRequestError } from "../api/bad-request";
 
 export function validateRequest(type: any) {
   return async (req: Request, res: Response, next: NextFunction) => {
@@ -17,8 +17,8 @@ export function validateRequest(type: any) {
     // 검증 에러 처리(첫 번째 에러만)
     if (errors.length > 0) {
       const firstError = errors[0];
-      const message = `${Object.values(firstError.constraints!).join(", ")}`;
-      throw new BadRequestError(message, req.originalUrl, firstError);
+      const details = `${Object.values(firstError.constraints!).join(", ")}`;
+      return res.fail(new BadRequestError("Bad Request", details));
     }
 
     // 유효성 검사 통과한 객체를 req.body에 다시 할당

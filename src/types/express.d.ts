@@ -1,5 +1,5 @@
 import { ApiResult } from "@/api/api-result.type";
-import { HttpError } from "@/api/http-error";
+import { HttpError } from "@/api/bad-request";
 import "express";
 
 declare module "express-serve-static-core" {

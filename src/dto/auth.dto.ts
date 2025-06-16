@@ -6,7 +6,7 @@ export class RegisterDto {
 
   @IsString()
   @Length(8, 20)
-  @Matches(/^(?=.*[a-z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).*$/)
+  @Matches(/^(?=.*[a-z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]).*$/)
   password!: string;
 
   @IsString()
@@ -20,4 +20,15 @@ export class LoginDto {
 
   @IsString()
   password!: string;
+}
+
+export class CheckEmailDto {
+  @IsEmail()
+  email!: string;
+}
+
+export class CheckNicknameDto {
+  @IsString()
+  @Length(2, 10)
+  nickname!: string;
 }

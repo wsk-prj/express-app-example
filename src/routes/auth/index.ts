@@ -1,7 +1,7 @@
-import { UnauthorizedError } from "@/api/http-error";
-import { InternalServerError } from "@/api/internal.error";
+import { ConflictError, UnauthorizedError } from "@/api/bad-request";
+import { InternalServerError } from "@/api/internal-error";
 import { env } from "@/config/env";
-import { LoginDto, RegisterDto } from "@/dto/auth.dto";
+import { CheckEmailDto, CheckNicknameDto, LoginDto, RegisterDto } from "@/dto/auth.dto";
 import { db } from "@/libs/db";
 import { validateRequest } from "@/middlewares/validator";
 import bcrypt from "bcrypt";
@@ -14,12 +14,12 @@ declare module "express-session" {
   }
 }
 
-export const authRouter = Router();
+export const router = Router();
 
-authRouter.post(
+router.post(
   "/register",
   validateRequest(RegisterDto),
-  asyncHandler(async (req, res, next) => {
+  asyncHandler(async (req, res, _next) => {
     const { nickname, email, password } = req.body;
 
     const user = await db.user.create({
@@ -40,10 +40,10 @@ authRouter.post(
   })
 );
 
-authRouter.post(
+router.post(
   "/login",
   validateRequest(LoginDto),
-  asyncHandler(async (req, res, next) => {
+  asyncHandler(async (req, res, _next) => {
     const { email, password } = req.body;
 
     const user = await db.user.findUnique({
@@ -65,7 +65,7 @@ authRouter.post(
   })
 );
 
-authRouter.post("/logout", (req, res, next) => {
+router.post("/logout", (req, res, _next) => {
   req.session.destroy((err) => {
     if (err) throw new InternalServerError("error while logging out");
 
@@ -73,3 +73,31 @@ authRouter.post("/logout", (req, res, next) => {
     res.success();
   });
 });
+
+router.post(
+  "/check/email",
+  validateRequest(CheckEmailDto),
+  asyncHandler(async (req, res, _next) => {
+    const { email } = req.body;
+    const user = await db.user.findUnique({
+      where: { email },
+    });
+    if (user) throw new ConflictError("Email already exists");
+
+    res.success();
+  })
+);
+
+router.post(
+  "/check/nickname",
+  validateRequest(CheckNicknameDto),
+  asyncHandler(async (req, res, _next) => {
+    const { nickname } = req.body;
+    const user = await db.user.findUnique({
+      where: { nickname },
+    });
+    if (user) throw new ConflictError("Nickname already exists");
+
+    res.success();
+  })
+);

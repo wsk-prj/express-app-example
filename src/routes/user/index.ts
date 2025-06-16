@@ -3,10 +3,10 @@ import { Request, Response, Router } from "express";
 import { UpdateUserDto } from "../../dto/user.dto";
 import { validateRequest } from "../../middlewares/validator";
 
-const userRouter = Router();
+export const router = Router();
 
 // 사용자 업데이트 라우트
-userRouter.put(
+router.put(
   "/:id",
   validateRequest(UpdateUserDto), // 부분 업데이트를 위해 skipMissingProperties: true
   async (req: Request, res: Response) => {
@@ -40,7 +40,7 @@ userRouter.put(
 );
 
 // 사용자 삭제 라우트
-userRouter.delete("/:id", async (req: Request, res: Response) => {
+router.delete("/:id", async (req: Request, res: Response) => {
   const { id } = req.params;
 
   try {
@@ -58,7 +58,7 @@ userRouter.delete("/:id", async (req: Request, res: Response) => {
 });
 
 // 모든 사용자 조회 라우트
-userRouter.get("/", async (req: Request, res: Response) => {
+router.get("/", async (req: Request, res: Response) => {
   try {
     const users = await db.user.findMany({
       select: {
@@ -78,7 +78,7 @@ userRouter.get("/", async (req: Request, res: Response) => {
 });
 
 // 특정 사용자 조회 라우트
-userRouter.get("/:id", async (req: Request, res: Response) => {
+router.get("/:id", async (req: Request, res: Response) => {
   const { id } = req.params;
 
   try {
@@ -104,5 +104,3 @@ userRouter.get("/:id", async (req: Request, res: Response) => {
     res.status(500).json({ message: "사용자 조회에 실패했습니다." });
   }
 });
-
-export { userRouter };
